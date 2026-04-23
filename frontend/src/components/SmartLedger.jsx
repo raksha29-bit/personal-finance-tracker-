@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Trash2, Edit2, Download, Save } from 'lucide-react';
 
 export default function SmartLedger({ onNavigate }) {
   const { expenses, categories, currency, addExpense, updateExpense, deleteExpense, selectedMonth, isDirty, saveChanges } = useFinance();
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
   const [editingCategory, setEditingCategory] = useState(null);
   const [newCatName, setNewCatName] = useState('');
 
@@ -69,7 +70,7 @@ export default function SmartLedger({ onNavigate }) {
   const handleRenameCategory = async (oldName) => {
     if (!newCatName || newCatName === oldName) return;
     try {
-      await fetch(`http://localhost:5001/api/categories/${oldName}`, {
+      await fetch(`${API_URL}/api/categories/${oldName}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newCatName })
@@ -81,7 +82,7 @@ export default function SmartLedger({ onNavigate }) {
   const handleDeleteCategory = async (name) => {
     if (!window.confirm(`Delete category ${name}?`)) return;
     try {
-      await fetch(`http://localhost:5001/api/categories/${name}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/api/categories/${name}`, { method: 'DELETE' });
       window.location.reload();
     } catch (e) { console.error(e); }
   };
@@ -90,7 +91,7 @@ export default function SmartLedger({ onNavigate }) {
     const name = prompt("New category name:");
     if (!name) return;
     try {
-      await fetch(`http://localhost:5001/api/categories`, {
+      await fetch(`${API_URL}/api/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name })

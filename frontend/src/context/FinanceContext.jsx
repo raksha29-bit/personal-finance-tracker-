@@ -5,6 +5,8 @@ const FinanceContext = createContext();
 export const useFinance = () => useContext(FinanceContext);
 
 export const FinanceProvider = ({ children }) => {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState(['Lifestyle', 'Snacks', 'Celebration', 'Personal', 'Misc']);
   const [currency, setCurrency] = useState('USD');
@@ -50,7 +52,7 @@ export const FinanceProvider = ({ children }) => {
   const fetchData = async (month) => {
     try {
       // Fetch categories
-      const catRes = await fetch('http://localhost:5001/api/categories');
+      const catRes = await fetch(`${API_URL}/api/categories`);
       if (catRes.ok) {
         const catData = await catRes.json();
         setCategories(catData);
@@ -58,7 +60,7 @@ export const FinanceProvider = ({ children }) => {
       }
 
       // Fetch expenses for the selected month
-      const res = await fetch(`http://localhost:5001/api/expenses?monthTag=${month}`);
+      const res = await fetch(`${API_URL}/api/expenses?monthTag=${month}`);
       if (res.ok) {
         const data = await res.json();
         setExpenses(data);
@@ -77,7 +79,7 @@ export const FinanceProvider = ({ children }) => {
 
   const saveChanges = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/expenses/batch', {
+      const res = await fetch(`${API_URL}/api/expenses/batch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ monthTag: selectedMonth, expenses })
@@ -135,7 +137,7 @@ export const FinanceProvider = ({ children }) => {
     localStorage.setItem('app_categories', JSON.stringify(uniqueCats));
     
     try {
-      await fetch(`http://localhost:5001/api/categories`, {
+      await fetch(`${API_URL}/api/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name })
@@ -149,7 +151,7 @@ export const FinanceProvider = ({ children }) => {
     localStorage.setItem('app_categories', JSON.stringify(newCats));
     
     try {
-      await fetch(`http://localhost:5001/api/categories/${name}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/api/categories/${name}`, { method: 'DELETE' });
     } catch (e) { console.error(e); }
   };
 
